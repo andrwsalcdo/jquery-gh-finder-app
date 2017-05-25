@@ -12,7 +12,33 @@ $(document).ready(function() {
       // } // you would use this if you want more than 50 requests per hour
             // but it isn't necessary for this simple project
     }).done(function(user) {
-      // console.log(user); //gets api data associated with the GH username
+      $.ajax({
+        url: `https://api.github.com/users/${username}/repos`,
+        data:{
+          // client_id: 'blah blah',
+          // client_secret: 'blah blah',
+          sort: 'created: asc',
+          per_page: 5
+        }
+      }).done(function(repos){
+          $.each(repos, function(index, repo) {
+              $('#repos').append(`
+                  <div class="well">
+                    <div class="row">
+                      <div class="col-md-7">
+                        <strong>${repo.name}</strong>: ${repo.description}
+                      </div>
+                      <div class="col-md-3">
+                        <span class="label label-default">Forks: ${repo.forks_count}</span>
+                        <span class="label label-primary">Watchers: ${repo.watchers_count}</span>
+                        <span class="label label-success">Stars: ${repo.stargazers_count}</span>
+                      </div>
+                      <div class="col-md-2">
+                        <a href="${repo.html_url}" target="_blank" class="btn btn-default">Repo Page</a>
+                      </div>
+              `);
+          });
+      });
 
         $('#profile').html(`
           <div class="panel panel-default">
@@ -41,6 +67,8 @@ $(document).ready(function() {
               </div>
             </div>
           </div>
+          <h3 class="page-header">Latest Repos</h3>
+          <div id="repos"></div>
         `);
     });
   });
